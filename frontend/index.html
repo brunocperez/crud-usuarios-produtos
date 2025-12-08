@@ -3,122 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD Frontend - Haskell Backend</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Calculadora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .calculator {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        #resultado {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .link a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Sistema CRUD - Frontend com Backend Haskell</h1>
-            <p>Gerencie usuários e produtos através da API</p>
-        </header>
-
-        <main>
-            <!-- Seção de Usuários -->
-            <section class="crud-section">
-                <h2>Usuários</h2>
-                
-                <div class="form-container">
-                    <h3>Criar/Editar Usuário</h3>
-                    <form id="formUsuario">
-                        <input type="hidden" id="usuarioId" value="">
-                        <div class="form-group">
-                            <label for="nome">Nome:</label>
-                            <input type="text" id="nome" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email:</label>
-                            <input type="email" id="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="idade">Idade:</label>
-                            <input type="number" id="idade" min="0">
-                        </div>
-                        <div class="form-buttons">
-                            <button type="submit" id="btnSalvarUsuario">Salvar Usuário</button>
-                            <button type="button" id="btnCancelarUsuario">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="list-container">
-                    <h3>Lista de Usuários</h3>
-                    <button id="btnCarregarUsuarios">Carregar Usuários</button>
-                    <table id="tabelaUsuarios">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Email</th>
-                                <th>Idade</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoTabelaUsuarios">
-                            <!-- Usuários serão inseridos aqui via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Seção de Produtos -->
-            <section class="crud-section">
-                <h2>Produtos</h2>
-                
-                <div class="form-container">
-                    <h3>Criar/Editar Produto</h3>
-                    <form id="formProduto">
-                        <input type="hidden" id="produtoId" value="">
-                        <div class="form-group">
-                            <label for="nomeProduto">Nome:</label>
-                            <input type="text" id="nomeProduto" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="descricao">Descrição:</label>
-                            <textarea id="descricao" rows="3"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="preco">Preço:</label>
-                            <input type="number" id="preco" step="0.01" min="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="quantidade">Quantidade:</label>
-                            <input type="number" id="quantidade" min="0" required>
-                        </div>
-                        <div class="form-buttons">
-                            <button type="submit" id="btnSalvarProduto">Salvar Produto</button>
-                            <button type="button" id="btnCancelarProduto">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="list-container">
-                    <h3>Lista de Produtos</h3>
-                    <button id="btnCarregarProdutos">Carregar Produtos</button>
-                    <table id="tabelaProdutos">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Descrição</th>
-                                <th>Preço</th>
-                                <th>Quantidade</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoTabelaProdutos">
-                            <!-- Produtos serão inseridos aqui via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>Frontend para API Haskell - Apenas HTML, CSS e JavaScript puro</p>
-        </footer>
+    <div class="calculator">
+        <h1>🧮 Calculadora</h1>
+        <div class="input-group">
+            <label for="n1">Primeiro Número:</label>
+            <input type="number" id="n1" placeholder="Digite um número">
+        </div>
+        <div class="input-group">
+            <label for="n2">Segundo Número:</label>
+            <input type="number" id="n2" placeholder="Digite outro número">
+        </div>
+        <button id="btn">Calcular Soma</button>
+        <div id="resultado">Resultado aparecerá aqui</div>
+        <div class="link">
+            <a href="catalogo.html">🎬 Ir para Catálogo de Filmes</a>
+        </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>

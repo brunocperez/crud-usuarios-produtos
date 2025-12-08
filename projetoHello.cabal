@@ -1,0 +1,33 @@
+cabal-version: 3.0
+name: projetoFilmes
+version: 0.1.0.0
+license: BSD-3-Clause
+license-file: LICENSE
+author: ycsal
+maintainer: yascsalgado@gmail.com
+category: Web
+build-type: Simple
+
+common warnings
+    ghc-options: -Wall
+
+executable projetoFilmes
+    import: warnings
+    main-is: Main.hs
+    other-modules:
+        Server.Routes
+        Api.Model
+    build-depends:
+        base,
+        servant,
+        aeson,
+        warp,
+        servant-server,
+        wai-cors,
+        wai,
+        postgresql-simple,
+        bytestring,
+        mtl,
+        zlib
+    hs-source-dirs: app
+    default-language: Haskell2010

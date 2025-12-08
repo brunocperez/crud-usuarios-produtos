@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS Filme(
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    diretor VARCHAR(50) NOT NULL,
+    ano INT NOT NULL
+);

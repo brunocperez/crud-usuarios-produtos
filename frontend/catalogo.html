@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Filmes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            color: #a0a0c0;
+            font-size: 1.2rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .card h2 {
+            color: #00dbde;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2::before {
+            content: "🎬";
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a0a0c0;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #00dbde;
+            box-shadow: 0 0 0 2px rgba(0, 219, 222, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 219, 222, 0.4);
+        }
+        
+        #btn-carregar {
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            margin-bottom: 20px;
+        }
+        
+        #resultado {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .success {
+            background: linear-gradient(45deg, #00b09b, #96c93d);
+        }
+        
+        .error {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .movie-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s;
+        }
+        
+        .movie-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-5px);
+        }
+        
+        .movie-card h3 {
+            color: #00dbde;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            height: 60px;
+            overflow: hidden;
+        }
+        
+        .movie-card p {
+            color: #a0a0c0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .movie-card .ano {
+            color: #fc00ff;
+            font-weight: bold;
+        }
+        
+        .id-badge {
+            display: inline-block;
+            background: rgba(0, 219, 222, 0.2);
+            color: #00dbde;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #a0a0c0;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #a0a0c0;
+        }
+        
+        .empty-state::before {
+            content: "📽️";
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Catálogo de Filmes</h1>
+            <p class="subtitle">Gerencie sua coleção de filmes favoritos</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="card">
+                <h2>Adicionar Filme</h2>
+                <form id="form-filme">
+                    <div class="form-group">
+                        <label for="titulo">Título do Filme</label>
+                        <input type="text" id="titulo" placeholder="Ex: O Poderoso Chefão" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diretor">Diretor</label>
+                        <input type="text" id="diretor" placeholder="Ex: Francis Ford Coppola" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ano">Ano de Lançamento</label>
+                        <input type="number" id="ano" min="1900" max="2024" placeholder="Ex: 1972" required>
+                    </div>
+                    <button type="submit">🎬 Adicionar ao Catálogo</button>
+                </form>
+                <div id="resultado"></div>
+            </div>
+            
+            <div class="card">
+                <h2>Catálogo de Filmes</h2>
+                <button id="btn-carregar">🔄 Atualizar Catálogo</button>
+                <div id="filmes-container" class="movies-grid">
+                    <!-- Filmes serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Catálogo de Filmes &copy; 2024 | Desenvolvido com Haskell e JavaScript</p>
+        </footer>
+    </div>
+
+    <script src="catalogo.js"></script>
+</body>
+</html>
