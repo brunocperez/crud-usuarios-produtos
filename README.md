@@ -1,2 +1,2 @@
-# crud-usuarios-produtos
-CRUD de usuários e produtos (Haskell Servant + JS) para a P2 de Tópicos Especiais em Informática.
+# crud-Catálogo-de-Filmes
+CRUD de Catálogo de filmes (Haskell Servant + JS) para a P2 de Tópicos Especiais em Informática.
