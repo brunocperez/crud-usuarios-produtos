@@ -1,37 +1,44 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('form-filme');
-    const btnCarregar = document.getElementById('btn-carregar');
+    const filmeIdInput = document.getElementById('filme-id');
+    const tituloInput = document.getElementById('titulo');
+    const diretorInput = document.getElementById('diretor');
+    const anoInput = document.getElementById('ano');
+    
+    const btnSalvar = document.getElementById('btn-salvar');
+    const btnCancelar = document.getElementById('btn-cancelar');
+    const formTitle = document.getElementById('form-title');
+    
     const filmesContainer = document.getElementById('filmes-container');
     const resultadoDiv = document.getElementById('resultado');
 
+    const API_URL = 'http://localhost:8080';
+
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        adicionarFilme();
+        salvarFilme();
     });
 
-    btnCarregar.addEventListener('click', function() {
-        carregarFilmes();
-    });
+    btnCancelar.addEventListener('click', resetarFormulario);
 
-    function adicionarFilme() {
-        const titulo = document.getElementById('titulo').value;
-        const diretor = document.getElementById('diretor').value;
-        const ano = document.getElementById('ano').value;
-
-        if (!titulo || !diretor || !ano) {
-            mostrarResultado('Preencha todos os campos!', 'error');
-            return;
-        }
+    function salvarFilme() {
+        const id = filmeIdInput.value;
+        const titulo = tituloInput.value;
+        const diretor = diretorInput.value;
+        const ano = parseInt(anoInput.value);
 
         const filme = {
-            id: 0,
+            filmeId: id ? parseInt(id) : 0, 
             titulo: titulo,
             diretor: diretor,
-            ano: parseInt(ano)
+            ano: ano
         };
 
-        fetch('http://localhost:8080/filme', {
-            method: 'POST',
+        const metodo = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/filme/${id}` : `${API_URL}/filme`;
+
+        fetch(url, {
+            method: metodo,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(filme)
         })
@@ -40,61 +47,101 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(json => {
-            mostrarResultado(`✅ Filme "${titulo}" adicionado com ID: ${json.resultado}`, 'success');
-            form.reset();
+            const acao = id ? 'atualizado' : 'adicionado';
+            mostrarResultado(`✅ Filme ${acao} com sucesso!`, 'success');
+            resetarFormulario();
             carregarFilmes();
         })
         .catch(error => {
-            mostrarResultado(`❌ Erro ao adicionar filme: ${error.message}`, 'error');
+            mostrarResultado(`❌ Erro: ${error.message}`, 'error');
         });
     }
 
-    function carregarFilmes() {
-        fetch('http://localhost:8080/filmes')
-        .then(response => {
-            if (!response.ok) throw new Error('Erro ao carregar filmes');
-            return response.json();
-        })
+    window.carregarFilmes = function() {
+        fetch(`${API_URL}/filmes`)
+        .then(response => response.json())
         .then(json => {
             filmesContainer.innerHTML = '';
-            
-            if (json.filmes.length === 0) {
-                filmesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Nenhum filme cadastrado</h3>
-                        <p>Adicione seu primeiro filme usando o formulário ao lado!</p>
-                    </div>
-                `;
+           
+            if (!json.filmes || json.filmes.length === 0) {
+                filmesContainer.innerHTML = '<p style="text-align:center; padding:20px;">Nenhum filme cadastrado.</p>';
                 return;
             }
-            
+           
             json.filmes.forEach(filme => {
-                const movieCard = document.createElement('div');
-                movieCard.className = 'movie-card';
-                movieCard.innerHTML = `
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
                     <h3>${filme.titulo}</h3>
                     <p>🎥 <strong>Diretor:</strong> ${filme.diretor}</p>
                     <p>📅 <strong>Ano:</strong> <span class="ano">${filme.ano}</span></p>
-                    <div class="id-badge">ID: ${filme.id}</div>
+                    <div class="actions">
+                        <button class="btn-edit" onclick="iniciarEdicao(${filme.filmeId}, '${escapeHtml(filme.titulo)}', '${escapeHtml(filme.diretor)}', ${filme.ano})">✏️ Editar</button>
+                        <button class="btn-delete" onclick="deletarFilme(${filme.filmeId})">🗑️ Excluir</button>
+                    </div>
                 `;
-                filmesContainer.appendChild(movieCard);
+                filmesContainer.appendChild(card);
             });
         })
-        .catch(error => {
-            mostrarResultado(`❌ Erro ao carregar filmes: ${error.message}`, 'error');
-        });
+        .catch(err => console.error(err));
+    };
+
+    window.iniciarEdicao = function(id, titulo, diretor, ano) {
+        filmeIdInput.value = id;
+        tituloInput.value = titulo;
+        diretorInput.value = diretor;
+        anoInput.value = ano;
+
+        formTitle.innerText = "✏️ Editar Filme";
+        btnSalvar.innerText = "💾 Salvar Alterações";
+        btnCancelar.style.display = 'block';
+        
+        form.scrollIntoView({ behavior: 'smooth' });
+    };
+
+
+    window.deletarFilme = function(id) {
+        if(!confirm("Tem certeza que deseja excluir este filme?")) return;
+
+        fetch(`${API_URL}/filme/${id}`, {
+            method: 'DELETE'
+        })
+        .then(res => {
+            if(res.ok) {
+                mostrarResultado("🗑️ Filme excluído.", "success");
+                carregarFilmes();
+                if(filmeIdInput.value == id) resetarFormulario();
+            } else {
+                throw new Error("Falha ao excluir");
+            }
+        })
+        .catch(err => mostrarResultado("Erro ao excluir", "error"));
+    };
+
+    function resetarFormulario() {
+        form.reset();
+        filmeIdInput.value = '';
+        formTitle.innerText = "Adicionar Filme";
+        btnSalvar.innerText = "🎬 Adicionar ao Catálogo";
+        btnCancelar.style.display = 'none';
     }
 
-    function mostrarResultado(mensagem, tipo) {
-        resultadoDiv.textContent = mensagem;
+    function mostrarResultado(msg, tipo) {
+        resultadoDiv.textContent = msg;
         resultadoDiv.className = tipo;
         resultadoDiv.style.display = 'block';
-        
-        setTimeout(() => {
-            resultadoDiv.style.display = 'none';
-        }, 5000);
+        setTimeout(() => { resultadoDiv.style.display = 'none'; }, 4000);
     }
 
-    // Carregar filmes automaticamente ao iniciar
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     carregarFilmes();
 });
